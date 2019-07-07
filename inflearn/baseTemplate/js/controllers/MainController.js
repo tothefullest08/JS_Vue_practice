@@ -1,8 +1,10 @@
 import FormView from '../views/FormView.js'
 import ResultView from '../views/ResultView.js'
 import TabView from '../views/TabView.js'
+import KeywordView from '../views/KeywordView.js'
 
 import SearchModel from '../models/SearchModel.js'
+import KeywordModel from '../models/KeywordModel.js'
 
 const tag = '[MainController]'
 
@@ -15,11 +17,11 @@ export default {
             .on('@reset', e=> this.onResetForm())
         
         TabView.setup(document.querySelector('#tabs'))
-            .on('@change', e => this.onChangeTab(e.detail.tabName)
-                
-            )
-            
+            .on('@change', e => this.onChangeTab(e.detail.tabName))
 
+        KeywordView.setup(document.querySelector('#search-keyword'))
+            .on('@click', e => this.onClickKeyword(e.detail.keyword))
+        
         ResultView.setup(document.querySelector('#search-result'))
         
         this.selctedTab = '추천 검색어'
@@ -29,6 +31,8 @@ export default {
     search(query) {
         console.log(tag, 'search()', query)
         // search API
+        FormView.setValue(query)
+
         SearchModel.list(query).then(data => {
             this.onSearchResult(data)
         })
@@ -37,9 +41,22 @@ export default {
     renderView() {
         console.log(tag, 'renderView()')
         TabView.setActiveTab(this.selctedTab)
+
+        if (this.selctedTab === '추천 검색어') {
+            this.fetchSearchKeyword()
+        } else {
+            debugger
+        }
+
         ResultView.hide()
     },
 
+    fetchSearchKeyword() {
+        KeywordModel.list().then(data => {
+            KeywordView.render(data)
+        })
+    },
+    
     onSubmit(input) {
         console.log(tag, 'onSubmit()', input)
         this.search(input)
@@ -47,14 +64,21 @@ export default {
 
     onResetForm(input) {
         console.log(tag, 'onResetForm()')
-        ResultView.hide()
+        // ResultView.hide()
+        this.renderView()
     },
 
     onSearchResult(data) {
+        TabView.hide()
+        KeywordView.hide()
         ResultView.render(data)
     },
 
     onChangeTab(tabName) {
         debugger
-    }
+    },
+
+    onClickKeyword(keyword) {
+        this.search(keyword)
+    },
 }
