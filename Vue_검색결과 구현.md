@@ -12,209 +12,126 @@ comments: true
 
 
 
-## Vue.js (MVVM) 시작하기
+## 검색 결과 구현(1)
 
-#### 1) MVVM 패턴 
+> 검색 결과가 검색폼 아래 위치한다.
 
-- Vue.js는 MVVM 패턴을 갖고 있음. MVVM 는 Model, View, View-Model으로 구성되어으며, M(Model)과 V(View)는 MVC 패턴과 동일한 기능을 함.
-- VM(View-Model)은 Model과 비슷하지만 조금 다른 역할을 하고 있음. 구조상으로 보면, Model과 View 사이에 위치하고 있음. Model로 부터 데이터를 갖고 오는데, 데이터는 View에 적합한 형태의 데이터로 가공됨.View-Model이 변경될 때마다 자동으로 연결되어있는 View 화면에 반영이 됨
-- Model보다 좀 더 적극적으로 뷰에 적합한 Model이라고 볼 수 있음. 
-- 하나의 View에는 하나의 View-Model이 1:1로 매칭되어있음. (View가 많은 경우 여러개의 View-Model이 생성될 수 있음)
+#### 1) 추가 코드 
 
-
-
-#### 2) 개발 환경 구성
-
-- Vue.js CDN을 index.html에 추가
-
-```html
-  <script src="https://unpkg.com/vue"></script>
-  <script type="module" src="./js/app.js"></script>
-</body>
-```
-
-- app.js에 hello world 찍어보기
-
-```html
-<!-- index.html -->
-<body>
-  <div id="app">
-    <header>
-      <h2 class="container">검색</h2>
-    </header>
-
-    <div class="container">
-      {{msg}}
-    </div>
-  </div>              
-```
+- 이전 강의와 비교해서 강의에서 추가된 코드는 아래와 같음
 
 ```javascript
-// app.js
-
-new Vue({
-    el: '#app',
-    data: {
-        msg: 'hello world'
-    }
-})
+// 이전 코드
+onReset() {
+    this.query = ''
+},
+    
+// 변경된 코드
+onReset() {
+    this.resetForm()
+},
+resetForm() {
+    this.query = ''
+    // todo remove result
+}
 ```
 
 
 
+#### 2) app.js
+
+- 검색 결과의 데이터를 저장할 변수를 정의 (배열의 형태로 초기화) - `searchResult`
+-  `searchResult`를 출력해주는 부분을 index.html에서 작성
+
+```javascript
+data: {
+    query: '',
+    searchResult: [],
+},
+```
 
 
-## 검색폼 구현 (1)
 
-> 검색 상품명 입력 폼이 위치한다. 
+#### 3) index.html
 
-#### 1) index.html
-
-- 검색 상품명 입력폼은 JS 디렉토리 내 index.html에서 구현했던 폼 태그를 사용
+- `v-if`를 사용하여 데이터가 있는 경우와 없는 경우를 구분하여 작성. 이때 `searchResult.length` 활용
+- 데이터가 없는 경우 -  `{{ query }} 검색어로 찾을 수 없습니다.` 
+- 데이터가 있는경우  `v-for`을 이용하여 배열을 반복돌며 출력
+  - img 태그의 src값에 바인딩된 값을 사용할 때는 `v-bind` 사용 (attribute의 값을 바인딩하는 역할)
 
 ```html
-<div id="app">
-    <header>
-        <h2 class="container">검색</h2>
-    </header>
-
-    <div class="container">
-        <form>
-            <input type="text" placeholder="검색어를 입력하세요" autofocus>
-            <button type="reset" class="btn-reset"></button>
-        </form>
-    </div>
+<div v-if="searchResult.length">
+    <ul>
+        <li v-for="item in searchResult">
+            <img v-bind:src="item.image"> {{item.name}}
+        </li>
+    </ul>
+</div>
+<div v-else>
+    {{ query }} 검색어로 찾을 수 없습니다.
 </div>
 ```
 
 
 
-> 검색어가 없는 경우 X 버튼을 숨긴다 & 검색어를 입력하면 x 버튼이 보인다
+#### 4) app.js
 
-#### 2) app.js
-
-- Vue 인스턴스 data 내  입력을 담당하는 query 생성 (입력데이터를 받아서 저장하는 역할)
-- query와 폼 태그의 입력값을 바인딩시키기 위해 `v-model` 사용
-- 버튼도 입력데이터에 따라 보이고 숨기게 할 수 있음 => `v-show` 사용
+- 검색을 하는 코드 구현(`onSubmit`) -> `search` 라는 함수 호출
+- search 함수는 SearchModel.js에 있는 데이터를 갖고와, searchResult 변수에 저장시키는 로직
+- sSearchModel의 데이터를 사용하기 위해 import
 
 ```javascript
-new Vue({
-    el: '#app',
-    data: {
-        query: ''
-    }
-})
+import SearchModel from './models/SearchModel.js'
+
+    methods: {
+        onSubmit(e) {
+            this.search()
+        },
+        search() {
+            SearchModel.list().then(data => {
+                this.searchResult = data
+            })
+        },
 ```
 
-```html
-<form>
-    <input type="text" v-model="query" placeholder="검색어를 입력하세요" autofocus>
-    <button type="reset" v-show="query.length" class="btn-reset"></button>
-</form>
-```
 
 
+#### 5) app.js 
 
-## 검색폼 구현(2)
+아무것도 입력하지 않았는데 "검색어로 찾을 수 없습니다" 가 출력되고 있음. 검색을 했는지 안했는지를 Form이 submit 되었는지 안되었는지를 관리하는 변수가 필요함. 
 
-> 엔터키를 입력하면 검색 결과가 보인다
+- `submitted` 라는 변수 생성
 
-#### 1) app.js & index.html
-
-- form 태그에, submit 이벤트가 발생했을 때 동작하는 함수를 구현 시킬 수 있음. => `v-on`  사용
-- `v-on`은 DOM에서 일어나는 이벤트를 listen하는 역할을 함.
-- 그 역할을 하는 함수 `onSubmit` 생성. 함수는 Vue 인스턴스의 methods 파라미터 내 작성 (methods에서는 DOM과 바인딩할 함수를 정의 할 수 있음)
-
-```html
-<form v-on:submit="onSubmit"> 
-    <input type="text" v-model="query" placeholder="검색어를 입력하세요" autofocus>
-    <button type="reset" v-show="query.length" class="btn-reset"></button>
-</form>
-```
+- 검색이 일어났을 때, `submitted =true`로 변경해줌
+- `submitted` 값에 따라서 검색 결과창의 결과를 다르게 보여주면 됨.
 
 ```javascript
-new Vue({
-    el: '#app',
-    data: {
-        query: ''
+data: {
+    query: '',
+    submitted: false, 
+    searchResult: [],
+},
+methods: {
+    search() {
+        SearchModel.list().then(data => {
+            this.submitted = true
+            this.searchResult = data
+        })
     },
-    methods: {
-        onSubmit(e) {
-            debugger
-        }
-    }
-})
 ```
 
-
-
-#### 2) 이벤트 처리
-
-위까지 코드를 작성한 후 서버를 실행시켜 검색어 입력 후 submit을 하면 breakpoint로 설정한 debugger에서 멈추는것을 알 수있음. 이때  디버거를 재개하면 화면이 갱신되는 것을 알 수 있음. 여태것 화면 갱신을 막았던 방법을 사용하면 `onSubmit`에서 받은 이벤트에 `e.preventDefault()`로 구현을 했음 (as per plain JS). 그러나 Vue.js에서는 손쉽게 이벤트 처리를 할 수 있음. 
-
-- 이벤트 종류 뒤에 `.prevent` 입력
-
 ```html
-<div class="container">
-    <form v-on:submit.prevent="onSubmit"> 
-        <input type="text" v-model="query" placeholder="검색어를 입력하세요" autofocus>
-        <button type="reset" v-show="query.length" class="btn-reset"></button>
-    </form>
+<div v-if="submitted">
+    <div v-if="searchResult.length">
+        <ul>
+            <li v-for="item in searchResult">
+                <img v-bind:src="item.image"> {{item.name}}
+            </li>
+        </ul>
+    </div>
+    <div v-else>
+        {{ query }} 검색어로 찾을 수 없습니다.
+    </div>
 </div>
-```
-
-
-
-## 검색폼 구현(3)
-
-> x 버튼을 클릭하거나 검색어를 삭제하면 해당 결과를 삭제한다.
-
-#### 1) index.html
-
-- 버튼에 click 이벤트를 listen 함.
-
-```html
-<button v-on:click="onReset" type="reset" v-show="query.length" class="btn-reset"></button>
-```
-
-
-
-#### 2) app.js
-
-- methods 내 `onReset()` 함수 구현
-
-```javascript
-    methods: {
-        onSubmit(e) {
-            // debugger
-        },
-        onReset() {
-            this.query = ''
-        },
-    }
-```
-
-
-
-> 검색어를 삭제하면 해당 결과를 삭제한다.
-
-#### 1) index.html
-
-- input에 keyup 이벤트를 listen 함.
-
-```html
-<input v-on:keyup="onKeyup" type="text" v-model="query" placeholder="검색어를 입력하세요" autofocus>
-```
-
-
-
-#### 2) app.js
-
-- methods 내 `onKeyup` 함수 구현
-
-```javascript
-        onKeyup() {
-            if (!this.query.length) this.onReset()
-        },
 ```
 

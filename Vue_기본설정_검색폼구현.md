@@ -16,9 +16,8 @@ comments: true
 
 #### 1) MVVM 패턴 
 
-- Vue.js는 MVVM 패턴을 갖고 있음. MVVM 는 Model, View, View-Model으로 구성되어으며, M(Model)과 V(View)는 MVC 패턴과 동일한 기능을 함.
-- VM(View-Model)은 Model과 비슷하지만 조금 다른 역할을 하고 있음. 구조상으로 보면, Model과 View 사이에 위치하고 있음. Model로 부터 데이터를 갖고 오는데, 데이터는 View에 적합한 형태의 데이터로 가공됨.View-Model이 변경될 때마다 자동으로 연결되어있는 View 화면에 반영이 됨
-- Model보다 좀 더 적극적으로 뷰에 적합한 Model이라고 볼 수 있음. 
+- Vue.js는 MVVM 패턴을 갖고 있음. MVVM 는 Model, View, View-Model으로 구성되어으며, M(Model)과 V(View)는 MVC 패턴의 M,V와 동일한 기능을 함.
+- VM(View-Model)은 Model과 비슷하지만 조금 다른 역할을 하고 있음. 구조상으로 보면, Model과 View 사이에 위치하고 있음. Model로 부터 데이터를 갖고 오는데, 데이터는 View에 적합한 형태의 데이터로 가공됨.View-Model이 변경될 때마다 자동으로 연결되어있는 View 화면에 반영이 됨. Model보다 좀 더 적극적으로 뷰에 적합한 Model이라고 볼 수 있음. 
 - 하나의 View에는 하나의 View-Model이 1:1로 매칭되어있음. (View가 많은 경우 여러개의 View-Model이 생성될 수 있음)
 
 
@@ -150,7 +149,8 @@ new Vue({
 
 #### 2) 이벤트 처리
 
-위까지 코드를 작성한 후 서버를 실행시켜 검색어 입력 후 submit을 하면 breakpoint로 설정한 debugger에서 멈추는것을 알 수있음. 이때  디버거를 재개하면 화면이 갱신되는 것을 알 수 있음. 여태것 화면 갱신을 막았던 방법을 사용하면 `onSubmit`에서 받은 이벤트에 `e.preventDefault()`로 구현을 했음 (as per plain JS). 그러나 Vue.js에서는 손쉽게 이벤트 처리를 할 수 있음. 
+- 위까지 코드를 작성한 후 서버를 실행시켜 검색어 입력 후 submit을 하면 breakpoint로 설정한 debugger에서 멈추는것을 알 수있음. 이때  디버거를 재개하면 화면이 갱신되는 것을 알 수 있음. 
+- 여태것 화면 갱신을 막았던 방법을 사용하면 `onSubmit`에서 받은 이벤트에 `e.preventDefault()`로 구현을 했음 (as per plain JS). 그러나 Vue.js에서는 손쉽게 이벤트 처리를 할 수 있음. 
 
 - 이벤트 종류 뒤에 `.prevent` 입력
 
@@ -188,7 +188,7 @@ new Vue({
         onSubmit(e) {
             // debugger
         },
-        onReset(e) {
+        onReset() {
             this.query = ''
         },
     }
