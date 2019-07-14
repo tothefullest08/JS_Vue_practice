@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <h1 v-once>{{ title }}</h1>
+  <p>{{ sayHello() }} - <a v-bind:href="link">Google</a></p>
+  <hr>
+  <p>{{finishedLink}}</p>
+  <p v-html="finishedLink"></p>
+  <hr>
+  <p v-on:mousemove="updateCoordinates">coordinates: {{ x }} / {{ y }}</p>
+  <button v-on:click="clickMe(2, $event)"> {{click }}</button>
+</div>
+
+<script>
+	new Vue({
+		el: '#app',
+		data: {
+      title: 'Hello World!',
+      link: 'http://google.com',
+      finishedLink: '<a href="http://google.com">Google</a>',
+      click: 0,
+      x: 0,
+      y: 0,
+    },
+    methods: {
+      sayHello: function(){
+        this.title="Hello";
+        return this.title
+      },
+      updateCoordinates: function(event){
+          console.log(event)
+          this.x = event.clientX;
+          this.y = event.clientY;
+      },
+      clickMe: function(step, even){
+        console.log(even)
+        //console.log(event)
+        this.click += step
+      }
+    }
+	})
+</script>
+	
+</body>
+</html>
