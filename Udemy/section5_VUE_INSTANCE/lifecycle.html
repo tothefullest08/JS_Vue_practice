@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1> {{ title }} </h1>
+    <button @click="title = 'Changed'"> Update title</button>
+    <button @click="destroy"> Destroy </button>
+  </div>  
+
+  
+</body>
+<script>
+
+  new Vue({
+    el: '#app',
+    data: {
+      title: 'The VueJS Instance'
+    },
+    // Vue Instance 생성 전 실행
+    beforeCreate: function() {
+      console.log('beforeCreate()')
+    },
+    // 인스턴스 생성 직후. data와 event 활성화. 접근 가능
+    created: function() {
+      console.log('created()')
+    },
+    // 인스턴스를 생성했으나, DOM에 mount 시키기 전.
+    beforeMount: function() {
+      console.log('beforeMount()')
+    },
+    // DOM에 붙여짐. 브라우저를 통해 확인 가능
+    mounted: function() {
+      console.log('mounted()')      
+    },
+    // 데이터가 변경될 경우, DOM에 업데이트 되기 바로 직전에 실행됨.
+    beforeUpdate() {
+      console.log('beforeUpdate()')
+    },
+    // DOM이 업데이트된 직후
+    updated() {
+      console.log('updated()')
+    },
+    // 인스턴스가 제거되기 직전
+    beforeDestroy() {
+      console.log('beforeDestroy()')
+    },
+    // 인스턴스가 제거 된 후. cleanup work가 필요할 때 사용. watcher, event listener 등 제거 
+    destroyed() {
+      console.log('Destroy()')
+    },
+    methods: {
+      destroy: function() {
+        this.$destroy();
+      }  
+    }
+  })
+ 
+
+</script>
+</html>
